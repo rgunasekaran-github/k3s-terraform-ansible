@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-workflows
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    # Source 1: Helm chart from Argo repo
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-workflows
+      targetRevision: 0.41.0
+      helm:
+        valueFiles:
+          - $values/k8s-manifests/argo-workflows/values.yaml
+
+    # Source 2: Your Git repo with custom values
+    - repoURL: https://github.com/rgunasekaran-github/k3s-terraform-ansible.git
+      targetRevision: ft/deploy-argo-workflows
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

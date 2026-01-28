@@ -1,0 +1,5 @@
+  # Argo Workflows Helm Values
+  # For homelab K3s deployment
+
+  server:
+    serviceType: NodePort
