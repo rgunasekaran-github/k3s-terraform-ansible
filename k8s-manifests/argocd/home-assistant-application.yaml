@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/rgunasekaran-github/k3s-terraform-ansible.git
-    targetRevision: ft/deploy-home-assistant
+    targetRevision: main
     path: k8s-manifests/home-assistant
 
   destination:
