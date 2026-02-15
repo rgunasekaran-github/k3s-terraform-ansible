@@ -11,7 +11,7 @@ metadata:
 data:
   OLLAMA_API_KEY: "ollama-local"
   OLLAMA_BASE_URL: "http://192.168.1.74:11434"
-  OPENCLAW_GATEWAY_TOKEN: "change-me-to-random-token"
+  OPENCLAW_GATEWAY_TOKEN: "cacf972992424c7a4502c136f702f911946fd00b381808a8fb373258c184cbf6"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
