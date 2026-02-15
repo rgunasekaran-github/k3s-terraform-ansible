@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openclaw
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+  namespace: openclaw
+data:
+  OLLAMA_API_KEY: "ollama-local"
+  OLLAMA_BASE_URL: "http://192.168.1.74:11434"
+  OPENCLAW_GATEWAY_TOKEN: "change-me-to-random-token"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openclaw-data
+  namespace: openclaw
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: openclaw
+  template:
+    metadata:
+      labels:
+        app: openclaw
+    spec:
+      containers:
+      - name: openclaw
+        image: ghcr.io/openclaw/openclaw:latest
+        ports:
+        - name: gateway
+          containerPort: 18789
+        - name: bridge
+          containerPort: 18790
+        envFrom:
+        - configMapRef:
+            name: openclaw-config
+        volumeMounts:
+        - name: data
+          mountPath: /home/node/.openclaw
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: openclaw-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  type: NodePort
+  ports:
+  - name: gateway
+    port: 18789
+    targetPort: 18789
+    protocol: TCP
+  - name: bridge
+    port: 18790
+    targetPort: 18790
+    protocol: TCP
+  selector:
+    app: openclaw
