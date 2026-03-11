@@ -15,7 +15,7 @@
             - $values/k8s-manifests/supabase/values.yaml
 
       - repoURL: https://github.com/rgunasekaran-github/k3s-terraform-ansible.git
-        targetRevision: feat/add-supabase-deployment
+        targetRevision: main
         ref: values
 
     destination:
