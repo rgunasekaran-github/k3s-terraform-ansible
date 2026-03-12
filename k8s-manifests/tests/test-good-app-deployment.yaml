@@ -1,0 +1,26 @@
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: good-app
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: good-app
+    template:
+      metadata:
+        labels:
+          app: good-app
+      spec:
+        containers:
+        - name: nginx
+          image: nginx:1.21
+          # HAS RESOURCES - Complies with policy!
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
