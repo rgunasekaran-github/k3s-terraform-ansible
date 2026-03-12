@@ -4,6 +4,7 @@ metadata:
   name: k8srequireresources
   annotations:
     description: "Requires containers to have resource limits and requests defined"
+    argocd.argoproj.io/sync-wave: "1"  # Apply FIRST
 spec:
   crd:
     spec:
