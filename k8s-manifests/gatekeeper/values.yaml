@@ -1,0 +1,17 @@
+  # OPA Gatekeeper Helm Values
+  # For homelab K3s deployment
+
+  # Audit mode - don't block deployments yet, just report violations
+  auditInterval: 60
+  validatingWebhookTimeoutSeconds: 3
+
+  # Minimal resources for homelab
+  replicas: 1
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
