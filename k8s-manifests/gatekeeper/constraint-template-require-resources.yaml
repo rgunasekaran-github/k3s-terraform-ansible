@@ -1,0 +1,41 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8srequireresources
+  annotations:
+    description: "Requires containers to have resource limits and requests defined"
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRequireResources
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8srequireresources
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          not container.resources.limits
+          msg := sprintf("Container '%s' must have resource limits defined", [container.name])
+        }
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          not container.resources.requests
+          msg := sprintf("Container '%s' must have resource requests defined", [container.name])
+        }
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          container.resources.limits
+          not container.resources.limits.memory
+          msg := sprintf("Container '%s' must have memory limits", [container.name])
+        }
+
+        violation[{"msg": msg}] {
+          container := input.review.object.spec.template.spec.containers[_]
+          container.resources.limits
+          not container.resources.limits.cpu
+          msg := sprintf("Container '%s' must have CPU limits", [container.name])
+        }

@@ -15,7 +15,7 @@
             - $values/k8s-manifests/gatekeeper/values.yaml
 
       - repoURL: https://github.com/rgunasekaran-github/k3s-terraform-ansible.git
-        targetRevision: main
+        targetRevision: feat/add-opa-policies
         ref: values
 
     destination:
