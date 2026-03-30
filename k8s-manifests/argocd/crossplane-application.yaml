@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    # Source 1: Crossplane Helm chart
+    - repoURL: https://charts.crossplane.io/stable
+      chart: crossplane
+      targetRevision: 1.15.0
+      helm:
+        releaseName: crossplane
+        valueFiles:
+          - $values/k8s-manifests/crossplane/install/values.yaml
+
+    # Source 2: Your Git repo with custom values
+    - repoURL: https://github.com/rgunasekaran-github/k3s-terraform-ansible.git
+      targetRevision: feature/crossplane-deployment
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: crossplane-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

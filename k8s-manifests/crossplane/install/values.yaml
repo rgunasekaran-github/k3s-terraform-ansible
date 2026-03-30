@@ -1,0 +1,9 @@
+# Crossplane Helm values
+# Customize if needed, otherwise keep minimal
+
+# Default values work fine for learning
+replicas: 1
+
+# Enable metrics (optional)
+metrics:
+  enabled: true
