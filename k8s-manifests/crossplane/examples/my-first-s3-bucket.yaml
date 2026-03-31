@@ -1,0 +1,11 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: rajesh-crossplane-learning-bucket
+  annotations:
+    crossplane.io/external-name: rajesh-crossplane-learning-20260331
+spec:
+  forProvider:
+    region: eu-west-1
+  providerConfigRef:
+    name: default
