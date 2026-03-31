@@ -14,3 +14,4 @@ spec:
       - kube-system
       - gatekeeper-system
       - argocd
+      - crossplane-system
