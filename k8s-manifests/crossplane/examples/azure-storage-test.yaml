@@ -1,0 +1,12 @@
+apiVersion: storage.azure.upbound.io/v1beta2
+kind: Account
+metadata:
+  name: rajeshcrossplanestorage
+spec:
+  forProvider:
+    location: West Europe
+    resourceGroupName: crossplane-learning-rg
+    accountTier: Standard
+    accountReplicationType: LRS
+  providerConfigRef:
+    name: default-azure
