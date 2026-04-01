@@ -1,0 +1,10 @@
+  apiVersion: platform.example.com/v1alpha1
+  kind: Sandbox
+  metadata:
+    name: my-first-test
+  spec:
+    duration: 2h
+    resourceQuota:
+      cpu: "2"
+      memory: "4Gi"
+    isolation: strict

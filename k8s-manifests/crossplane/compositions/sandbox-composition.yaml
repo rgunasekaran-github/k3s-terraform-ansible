@@ -1,0 +1,109 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: sandbox-k8s
+  labels:
+    provider: kubernetes
+spec:
+  compositeTypeRef:
+    apiVersion: platform.example.com/v1alpha1
+    kind: XSandbox
+
+  resources:
+  # 1. Create Kubernetes Namespace
+  - name: namespace
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: "" # Will be patched
+              labels:
+                sandbox: "true"
+                managed-by: "crossplane"
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      transforms:
+      - type: string
+        string:
+          fmt: "sandbox-%s"
+    - fromFieldPath: spec.duration
+      toFieldPath: spec.forProvider.manifest.metadata.annotations["ttl"]
+
+  # 2. Create ResourceQuota
+  - name: resource-quota
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: ResourceQuota
+            metadata:
+              name: sandbox-quota
+              namespace: "" # Will be patched
+            spec:
+              hard:
+                requests.cpu: ""
+                requests.memory: ""
+                limits.cpu: ""
+                limits.memory: ""
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
+      transforms:
+      - type: string
+        string:
+          fmt: "sandbox-%s"
+    - fromFieldPath: spec.resourceQuota.cpu
+      toFieldPath: spec.forProvider.manifest.spec.hard["requests.cpu"]
+    - fromFieldPath: spec.resourceQuota.cpu
+      toFieldPath: spec.forProvider.manifest.spec.hard["limits.cpu"]
+    - fromFieldPath: spec.resourceQuota.memory
+      toFieldPath: spec.forProvider.manifest.spec.hard["requests.memory"]
+    - fromFieldPath: spec.resourceQuota.memory
+      toFieldPath: spec.forProvider.manifest.spec.hard["limits.memory"]
+
+  # 3. Create NetworkPolicy (Isolation)
+  - name: network-policy
+    base:
+      apiVersion: kubernetes.crossplane.io/v1alpha2
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            metadata:
+              name: sandbox-isolation
+              namespace: "" # Will be patched
+            spec:
+              podSelector: {}
+              policyTypes:
+              - Ingress
+              - Egress
+              egress:
+              # Allow DNS
+              - to:
+                - namespaceSelector:
+                    matchLabels:
+                      kubernetes.io/metadata.name: kube-system
+                ports:
+                - protocol: UDP
+                  port: 53
+              # Allow internal communication
+              - to:
+                - podSelector: {}
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
+      transforms:
+      - type: string
+        string:
+          fmt: "sandbox-%s"
