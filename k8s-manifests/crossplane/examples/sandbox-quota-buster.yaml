@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: quota-buster
+  namespace: sandbox-my-first-test-9pcg9
+  labels:
+    example: quota-validation
+spec:
+  containers:
+  - name: big-app
+    image: nginx:alpine
+    resources:
+      requests:
+        cpu: "50"
+        memory: "50Gi"
+      limits:
+        cpu: "50"
+        memory: "50Gi"
+    
